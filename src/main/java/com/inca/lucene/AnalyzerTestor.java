@@ -9,7 +9,7 @@ import org.wltea.analyzer.lucene.IKAnalyzer;
 
 public class AnalyzerTestor {
 
-	private static String str = "我的Hello kitty,wo de x i z ,明天G ood morging";
+	private static String str = "Beat Beat Beat";
 
 	public static void testAnalyzer(Analyzer analyzer, String str) throws IOException {
 		TokenStream stream = analyzer.tokenStream("content", new StringReader(str));

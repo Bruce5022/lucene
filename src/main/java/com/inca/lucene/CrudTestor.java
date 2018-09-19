@@ -7,6 +7,9 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -29,7 +32,7 @@ public class CrudTestor {
 		Directory directory = FSDirectory.open(Paths.get(Constants.INDEX_PATH));
 		IndexReader reader = DirectoryReader.open(directory);
 		IndexSearcher searcher = new IndexSearcher(reader);
-		String keyword = "content:淑女";
+		String keyword = "title:Beat";
 		String defaultField = "content";
 		Analyzer analyzer = new IKAnalyzer();
 		QueryParser parser = new QueryParser(defaultField, analyzer);
@@ -41,9 +44,24 @@ public class CrudTestor {
 		}
 		
 	}
+	
+	public static void testDelete() throws IOException, ParseException {
+		Directory directory = FSDirectory.open(Paths.get(Constants.INDEX_PATH));
+		IndexWriterConfig config = new IndexWriterConfig(new IKAnalyzer());
+		IndexWriter writer = new IndexWriter(directory, config);
+		
+//		writer.deleteAll();
+		// 根据某个字段是否包含关键字删除
+		// 分词的结果:原英文全变成小写,比较坑的地方;删除的时候,不管原单词英文字母什么样,都用小写
+		long result = writer.deleteDocuments(new Term("content","beat"));
+		System.out.println("结果:"+result);
+		writer.commit();
+		writer.close();
+	}
 
 	public static void main(String[] args) throws IOException, ParseException {
 		testSearch();
+//		testDelete();
 		System.out.println("执行完毕!!!");
 	}
 }
