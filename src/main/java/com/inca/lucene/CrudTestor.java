@@ -53,8 +53,17 @@ public class CrudTestor {
 //		writer.deleteAll();
 		// 根据某个字段是否包含关键字删除
 		// 分词的结果:原英文全变成小写,比较坑的地方;删除的时候,不管原单词英文字母什么样,都用小写
-		long result = writer.deleteDocuments(new Term("content","beat"));
-		System.out.println("结果:"+result);
+//		long result = writer.deleteDocuments(new Term("content","beat"));
+//		System.out.println("结果:"+result);
+		
+		
+		String keyword = "title:Beat";
+		String defaultField = "content";
+		Analyzer analyzer = new IKAnalyzer();
+		QueryParser parser = new QueryParser(defaultField, analyzer);
+		Query query = parser.parse(keyword);
+		writer.deleteDocuments(query);
+		
 		writer.commit();
 		writer.close();
 	}
