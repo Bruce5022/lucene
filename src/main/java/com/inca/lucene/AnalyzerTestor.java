@@ -22,7 +22,9 @@ public class AnalyzerTestor {
 
 	public static void main(String[] args) {
 		try {
-			testAnalyzer(new IKAnalyzer(), str);
+		
+			// useSmart是否最大化匹配原则,如果扩展词中有了,就别细化分词了
+			testAnalyzer(new IKAnalyzer(true), str);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
