@@ -34,5 +34,9 @@ public class IndexCreator {
 		doc.add(new TextField("author", bean.getAuthor(), Store.YES));
 		return doc;
 	}
+	
+	public static void main(String[] args) throws IOException {
+		indexCreate();
+	}
 
 }
