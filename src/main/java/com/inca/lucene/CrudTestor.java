@@ -13,10 +13,12 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.wltea.analyzer.lucene.IKAnalyzer;
@@ -89,11 +91,25 @@ public class CrudTestor {
 	}
 
 	public static void main(String[] args) throws IOException, ParseException {
-		//下满方法效果一样
+		//下满方法效果一样：term查询
 //		testSearch("title:beat");
 //		TermQuery termQuery = new TermQuery(new Term("title", "beat"));
 //		testSearch2(termQuery);
 //		testDelete();
+		// 段落查询:下面两种方式一样的效果
+//		testSearch("content:\"just beat\"");其实是PhraseQuery
+//		PhraseQuery.Builder builder = new PhraseQuery.Builder();
+//		//有先后顺序，这两个构造出来的就是根据先后顺序：query带的字符串：title:"just beat"
+//		builder.add(new Term("title", "just"));
+//		builder.add(new Term("title", "beat"));
+//		testSearch2(builder.build());
+		//通配符查询：*其实类型是WildcardQuery，下面两种方式一样
+//		testSearch("title:be*at");
+//		testSearch2(new WildcardQuery(new Term("title","be*at")));
+		// 模糊查询：~真正的类型是FuzzyQuery
+		// 段落基础上用“~”
+		testSearch("title:be~at");
+		//与或非查询
 		System.out.println("执行完毕!!!");
 	}
 }
