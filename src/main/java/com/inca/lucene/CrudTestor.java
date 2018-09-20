@@ -15,6 +15,7 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -28,21 +29,40 @@ import org.wltea.analyzer.lucene.IKAnalyzer;
  */
 public class CrudTestor {
 
-	public static void testSearch() throws IOException, ParseException {
+	public static void testSearch(String keyword) throws IOException, ParseException {
 		Directory directory = FSDirectory.open(Paths.get(Constants.INDEX_PATH));
 		IndexReader reader = DirectoryReader.open(directory);
 		IndexSearcher searcher = new IndexSearcher(reader);
-		String keyword = "title:Beat";
-		String defaultField = "content";
+		//查询的两种方式：
+		//1.通过QueryParser来解析字符串封装为Query对象，执行查询：这里的query其实是TermQuery
+		//2.直接创建Query子类来查询
 		Analyzer analyzer = new IKAnalyzer();
-		QueryParser parser = new QueryParser(defaultField, analyzer);
+		QueryParser parser = new QueryParser(keyword, analyzer);
 		Query query = parser.parse(keyword);
+		System.out.println("真正的类型："+query.getClass());
 		TopDocs hits = searcher.search(query, 100);
 		for (ScoreDoc scoreDoc : hits.scoreDocs) {
-			Document doc = searcher.doc(scoreDoc.doc);
+			int docId = scoreDoc.doc;
+			System.out.println(docId);
+			Document doc = searcher.doc(docId);
 			System.out.println(doc.get("content"));
 		}
-		
+	}
+	
+	public static void testSearch2(Query query) throws IOException, ParseException {
+		Directory directory = FSDirectory.open(Paths.get(Constants.INDEX_PATH));
+		IndexReader reader = DirectoryReader.open(directory);
+		IndexSearcher searcher = new IndexSearcher(reader);
+		System.out.println("query带的字符串："+query.toString());
+		//2.直接创建Query子类来查询
+		System.out.println("真正的类型："+query.getClass());
+		TopDocs hits = searcher.search(query, 100);
+		for (ScoreDoc scoreDoc : hits.scoreDocs) {
+			int docId = scoreDoc.doc;
+			System.out.println(docId);
+			Document doc = searcher.doc(docId);
+			System.out.println(doc.get("content"));
+		}
 	}
 	
 	public static void testDelete() throws IOException, ParseException {
@@ -69,7 +89,10 @@ public class CrudTestor {
 	}
 
 	public static void main(String[] args) throws IOException, ParseException {
-		testSearch();
+		//下满方法效果一样
+//		testSearch("title:beat");
+//		TermQuery termQuery = new TermQuery(new Term("title", "beat"));
+//		testSearch2(termQuery);
 //		testDelete();
 		System.out.println("执行完毕!!!");
 	}
